@@ -840,13 +840,8 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/vim,node,vuejs,linux,macos,emacs,python,windows,notepadpp,virtualenv,sublimetext,visualstudio,jetbrains+all
 
-# MkDocs
-site/
-
-# Library
-base_api_client/
-
-cache/
-ldap_client_api/
-logs/
-password_safe_api_client/
+# Application Specific
+/logs/
+/base_client_api/
+/tests/logs/
+poetry.lock

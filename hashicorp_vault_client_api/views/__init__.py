@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.9
-"""HashiCorp Vault Client API -> Init
+"""HashiCorp Vault Client API -> Views -> Init
 Copyright (C) 2021 Jerod Gawne <https://github.com/jerodg/>
 
 This program is free software: you can redistribute it and/or modify
@@ -17,12 +17,3 @@ copies or substantial portions of the Software.
 
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
-from sys import stdout
-
-from loguru import logger
-
-__version__ = '0.1.0'
-
-# Because this is a library; use logger.enable('base_client_api) in script to see log msgs.
-logger.add(sink=stdout)
-logger.disable(__name__)
