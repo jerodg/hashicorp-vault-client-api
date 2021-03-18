@@ -23,14 +23,26 @@ from base_client_api.models.record import Record
 
 
 class SecretOptions(Record):
+    """Secret Options"""
     cas: int = 0
 
 
 class CreateUpdateSecret(Record):
+    """Secret -> Create/Update
+
+    POST /kv/data/{secret_name}
+
+    Create or update a secret."""
     options: Optional[SecretOptions]
     data: dict
     namespace: Optional[str]
     secret_name: str
+
+    class Config:
+        """MyConfig
+
+        Pydantic configuration"""
+        alias_generator = None
 
     @property
     def endpoint(self) -> str:

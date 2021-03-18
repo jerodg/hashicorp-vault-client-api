@@ -21,7 +21,7 @@ from sys import stdout
 
 from loguru import logger
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 # Because this is a library; use logger.enable('base_client_api) in script to see log msgs.
 logger.add(sink=stdout)

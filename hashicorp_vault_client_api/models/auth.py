@@ -23,15 +23,20 @@ from base_client_api.models.record import Record
 
 
 class AuthAppRole(Record):
+    """Authorization -> App Role
+
+    POST /auth/approle/login
+
+    Login using approle credentials"""
     namespace: Optional[str]
     secret_store: str = 'kv'
     role_id: Optional[str]
     secret_id: Optional[str]
 
     class Config:
-        """MyConfig
+        """Pydantic configuration
 
-        Pydantic configuration"""
+        Required because the api doesn't conform to JSON spec."""
         alias_generator = None
 
     @property

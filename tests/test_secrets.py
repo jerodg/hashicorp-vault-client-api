@@ -40,8 +40,8 @@ async def test_secrets_create_update():
     async with VaultClient(cfg=f'{getenv("CFG_HOME")}/hashicorp_vault_test.toml') as vc:
         await vc.login(model=AuthAppRole)
 
-        results = await vc.make_request(models=CreateUpdateSecret(data={'test-key': 'test-value2'},
-                                                                  secretName='test-client-api-secret'))
+        results = await vc.make_request(models=CreateUpdateSecret(data={'test-key': 'test-value3'},
+                                                                  secret_name='test-client-api-secret'))
 
         assert type(results) is Results
         assert results.success is not None

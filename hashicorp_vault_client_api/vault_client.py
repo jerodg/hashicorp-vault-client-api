@@ -27,7 +27,7 @@ from rich import print
 class VaultClient(BaseClientApi):
     """HashiCorp Vault Client"""
 
-    def __init__(self, cfg: Union[str, dict], debug: Optional[bool] = False):
+    def __init__(self, cfg: Union[str, dict]):
         """Initializes Class
 
         Args:
@@ -35,7 +35,6 @@ class VaultClient(BaseClientApi):
                 pointing to a configuration file (json/toml). See
                 config.* in the examples folder for reference."""
         super().__init__(cfg=cfg)
-        # self.debug = True
 
     async def __aenter__(self):
         return self
@@ -45,10 +44,8 @@ class VaultClient(BaseClientApi):
 
     async def login(self, model: Record, debug: Optional[bool] = False) -> str:
         response = await self.make_request(models=model(**self.cfg['Auth']), debug=debug)
-        # print(f'response:\n{response}')
 
         self.HDR['X-Vault-Token'] = response.success[0]['auth']['client_token']
-        # return response['auth']['client_token']
 
 
 if __name__ == '__main__':
