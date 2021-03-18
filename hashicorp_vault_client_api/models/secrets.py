@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.9
-"""HashiCorp Vault Client API -> Models -> Auth
+"""HashiCorp Vault Client API -> Models -> Secrets
 Copyright (C) 2021 Jerod Gawne <https://github.com/jerodg/>
 
 This program is free software: you can redistribute it and/or modify
@@ -22,17 +22,15 @@ from typing import Optional
 from base_client_api.models.record import Record
 
 
-class AuthAppRole(Record):
+class SecretOptions(Record):
+    cas: int = 0
+
+
+class CreateUpdateSecret(Record):
+    options: Optional[SecretOptions]
+    data: dict
     namespace: Optional[str]
-    secret_store: str = 'kv'
-    role_id: Optional[str]
-    secret_id: Optional[str]
-
-    class Config:
-        """MyConfig
-
-        Pydantic configuration"""
-        alias_generator = None
+    secret_name: str
 
     @property
     def endpoint(self) -> str:
@@ -42,7 +40,7 @@ class AuthAppRole(Record):
 
         Returns:
             (str)"""
-        return '/auth/approle/login'
+        return f'/kv/data/{self.secret_name}'
 
     @property
     def method(self) -> Optional[str]:
@@ -59,4 +57,4 @@ class AuthAppRole(Record):
     def json_body(self) -> Optional[dict]:
         """Request Body"""
 
-        return self.dict(include={'role_id', 'secret_id'})
+        return self.dict(include={'options', 'data'})
