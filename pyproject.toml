@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "hashicorp-vault-client-api"
-version = "0.2.0"
+version = "0.2.1"
 description = "HashiCorp Vault Client API"
 authors = ["Jerod Gawne <jerodgawne@gmail.com>"]
 
 [tool.poetry.dependencies]
 base-client-api = "^2.0.0"
-python = "^3.9.0"
+python = "^3.8"  # Recommended 3.9+
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
