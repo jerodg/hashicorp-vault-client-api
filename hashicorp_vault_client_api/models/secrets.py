@@ -17,28 +17,60 @@ copies or substantial portions of the Software.
 
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
-from base_client_api.models.record import Record
 from typing import Optional
+
+from base_client_api.models.record import Record
 
 
 class SecretOptions(Record):
     """Secret Options"""
-    cas: int = 0
+    cas: Optional[int]
+
+
+class SecretData(Record):
+    """Secret Data"""
+    namespace: Optional[str] = ''
+    secret_name: str
+    key: str
+    value: str
+    path: Optional[str] = ''
+    cmdb: Optional[str]
+
+    def dict(self, *,
+             include: set = None,
+             exclude: set = None,
+             by_alias: bool = True,
+             skip_defaults: bool = None,
+             exclude_unset: bool = False,
+             exclude_defaults: bool = False,
+             exclude_none: bool = True) -> dict:
+        """Dictionary
+
+        Args:
+            include (set):
+            exclude (set):
+            by_alias (bool):
+            skip_defaults (bool):
+            exclude_unset (bool):
+            exclude_defaults (bool):
+            exclude_none (bool):
+
+        Returns:
+            dct (Dict[str, Any])"""
+        return {self.key: self.value}
 
 
 class CreateUpdateSecret(Record):
     """Secret -> Create/Update
 
-    POST /kv/data/{secret_name}
+    POST /{namespace}/kv/data/{path}{secret_name}
 
     Create or update a secret."""
     options: Optional[SecretOptions]
-    data: dict
-    namespace: Optional[str]
-    secret_name: str
+    data: Optional[SecretData]
 
     class Config:
-        """MyConfig
+        """Config
 
         Pydantic configuration"""
         alias_generator = None
@@ -51,7 +83,7 @@ class CreateUpdateSecret(Record):
 
         Returns:
             (str)"""
-        return f'/kv/data/{self.secret_name}'
+        return f'{self.data.namespace}/kv/data/{self.data.path}/{self.data.secret_name}'
 
     @property
     def method(self) -> Optional[str]:
@@ -67,5 +99,4 @@ class CreateUpdateSecret(Record):
     @property
     def json_body(self) -> Optional[dict]:
         """Request Body"""
-
-        return self.dict(include={'options', 'data'})
+        return self.dict()

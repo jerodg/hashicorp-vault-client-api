@@ -17,10 +17,14 @@ copies or substantial portions of the Software.
 
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
+import asyncio
+from typing import List, NoReturn, Optional, Union
+
 from base_client_api.base_client import BaseClientApi
 from base_client_api.models.record import Record
+from base_client_api.models.results import Results
+from hashicorp_vault_client_api.models.auth import AuthAppRole
 from rich import print
-from typing import NoReturn, Optional, Union
 
 
 class VaultClient(BaseClientApi):
@@ -42,10 +46,31 @@ class VaultClient(BaseClientApi):
     async def __aexit__(self, exc_type: None, exc_val: None, exc_tb: None) -> NoReturn:
         await super().__aexit__(exc_type, exc_val, exc_tb)
 
-    async def login(self, model: Any, debug: Optional[bool] = False) -> str:
-        response = await self.make_request(models=model(**self.cfg['Auth']), debug=debug)
-
+    async def login(self):
+        results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth']))))
+        response = await self.process_results(results=Results(responses=results), model=AuthAppRole)
         self.HDR['X-Vault-Token'] = response.success[0]['auth']['client_token']
+
+    async def make_request(self, models: List[Record], debug: Optional[bool] = False) -> Results:
+        """Make Request
+
+        This is a convenience method to make calling easier.
+        It can be overridden to provide additional functionality.
+
+        Args:
+            models (List[Record]): If sending a list of models they must be all of the same type
+            debug (bool):
+
+        Returns:
+            results (Reults)"""
+        if not self.authorized:
+            await self.login()
+
+        if type(models) is not list:
+            models = [models]
+
+        results = await asyncio.gather(*[asyncio.create_task(self.request(m, debug=debug)) for m in models])
+        return await self.process_results(results=Results(responses=results), model=models[0].__class__)
 
 
 if __name__ == '__main__':

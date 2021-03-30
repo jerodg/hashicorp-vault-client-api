@@ -17,14 +17,14 @@ copies or substantial portions of the Software.
 
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
-import pytest
 import time
-from base_client_api.models.results import Results
-from base_client_api.utils import bprint, tprint
 from os import getenv
 
-from hashicorp_vault_client_api.models.auth import AuthAppRole
-from hashicorp_vault_client_api.models.secrets import CreateUpdateSecret
+import pytest
+from base_client_api.models.results import Results
+from base_client_api.utils import bprint, tprint
+from devtools import debug
+from hashicorp_vault_client_api.models.secrets import CreateUpdateSecret, SecretData, SecretOptions
 from hashicorp_vault_client_api.vault_client import VaultClient
 
 
@@ -37,10 +37,21 @@ async def test_secrets_create_update():
     bprint('Test: Secrets Create/Update', 'top')
 
     async with VaultClient(cfg=f'{getenv("CFG_HOME")}/hashicorp_vault_test.toml') as vc:
-        await vc.login(model=AuthAppRole)
+        model = CreateUpdateSecret(
+                data=SecretData(secret_name='client-temp',
+                                key='je1234-eclient',
+                                value='1260094080553877',
+                                path='je1234/unbound/sandbox'  # {cmdb}/unbound/{partition}
+                                ),
+                options=SecretOptions())
 
-        results = await vc.make_request(models=CreateUpdateSecret(data={'test-key': 'test-value3'},
-                                                                  secret_name='test-client-api-secret'))
+        debug(model)
+        debug(model.endpoint)
+        debug(model.parameters)
+        debug(model.json())
+        debug(model.dict())
+
+        results = await vc.make_request(models=model)
 
         assert type(results) is Results
         assert results.success is not None

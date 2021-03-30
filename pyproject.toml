@@ -5,15 +5,10 @@ description = "HashiCorp Vault Client API"
 authors = ["Jerod Gawne <jerodgawne@gmail.com>"]
 
 [tool.poetry.dependencies]
-base-client-api = "^2.0.0"
-python = "^3.8"  # Recommended 3.9+
+base-client-api = "^2.2.0"
+python = "^3.8.0"  # Recommended 3.9+
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.2"
-pytest-asyncio = "^0.14.0"
-pytest-cov = "^2.11.1"
-pytest-runner = "^5.3.0"
-twine = "^3.4.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
