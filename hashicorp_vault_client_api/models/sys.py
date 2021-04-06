@@ -28,7 +28,8 @@ class CreateUpdateNamespace(Record):
     POST /sys/namespaces/{namespace}
 
     Create or Update a Namespace"""
-    namespace: str
+    namespace_prefix: Optional[str] = ''
+    namespace_suffix: str
 
     @property
     def endpoint(self) -> str:
@@ -38,7 +39,7 @@ class CreateUpdateNamespace(Record):
 
         Returns:
             (str)"""
-        return f'/sys/namespaces/{self.namespace}'
+        return f'{"/" if self.namespace_prefix else ""}{self.namespace_prefix}/sys/namespaces/{self.namespace_suffix}'
 
     @property
     def method(self) -> Optional[str]:
