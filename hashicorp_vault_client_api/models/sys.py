@@ -17,7 +17,7 @@ copies or substantial portions of the Software.
 
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
-from typing import Optional
+from typing import List, Optional
 
 from base_client_api.models.record import Record
 
@@ -51,3 +51,48 @@ class CreateUpdateNamespace(Record):
         Returns:
             (str)"""
         return 'POST'
+
+
+class Policy(Record):
+    """Policy"""
+    path: str
+    capabilities: List[str]
+
+
+class CreateUpdatePolicy(Record):
+    """Sys/Policies -> Create/Update
+
+    PUT /sys/policy/{policy_id}
+
+    Create or Update a Policy"""
+    policy_id: str
+    body: Policy
+
+    @property
+    def endpoint(self) -> str:
+        """Endpoint
+
+        The suffix end of the URI
+
+        Returns:
+            (str)"""
+        return f'/sys/policy/{self.policy_id}'
+
+    @property
+    def method(self) -> Optional[str]:
+        """Method
+
+        The HTTP verb to be used
+         - Must be a valid HTTP verb as listed above in METHODS
+
+        Returns:
+            (str)"""
+        return 'PUT'
+
+    @property
+    def json_body(self) -> Optional[dict]:
+        """Request Body"""
+        cap = ','.join((f'"{x}"' for x in self.body.capabilities))
+        d = {'policy': f'path "{self.body.path}" {{capabilities = [{cap}]}}'}
+        return d
+        # return self.dict(include={'body'})

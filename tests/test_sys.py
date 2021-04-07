@@ -25,7 +25,7 @@ from base_client_api.models.results import Results
 from base_client_api.utils import bprint, tprint
 from devtools import debug
 
-from hashicorp_vault_client_api.models.sys import CreateUpdateNamespace
+from hashicorp_vault_client_api.models.sys import CreateUpdateNamespace, CreateUpdatePolicy, Policy
 from hashicorp_vault_client_api.vault_client import VaultClient
 
 
@@ -54,5 +54,33 @@ async def test_create_update_namespace():
         assert not results.failure
 
         tprint(results, top=5)
+
+    bprint(f'Completed in {(time.perf_counter() - ts):f} seconds.', 'bottom')
+
+
+@pytest.mark.asyncio
+async def test_create_update_policy():
+    ts = time.perf_counter()
+    bprint('Test: Create/Update Policy', 'top')
+
+    async with VaultClient(cfg=f'{getenv("CFG_HOME")}/hashicorp_vault_test.toml') as vc:
+        model = CreateUpdatePolicy(policy_id='je1234.list',
+                                   body=Policy(path='kv/metadata/',
+                                               capabilities=['list']))
+
+        debug(model)
+        debug(model.endpoint)
+        debug(model.parameters)
+        debug(model.json_body)
+        debug(model.dict())
+
+        results = await vc.make_request(models=model)
+
+        assert type(results) is Results
+        assert results.success is not None
+        assert not results.failure
+
+        tprint(results, top=5)
+        # This API call returns a 204 with no body; No response is expected.
 
     bprint(f'Completed in {(time.perf_counter() - ts):f} seconds.', 'bottom')
