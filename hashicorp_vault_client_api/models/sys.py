@@ -55,8 +55,8 @@ class CreateUpdateNamespace(Record):
 
 class Policy(Record):
     """Policy"""
-    path: str
-    capabilities: List[str]
+    path: List[str]
+    capabilities: List[List[str]]
 
 
 class CreateUpdatePolicy(Record):
@@ -92,7 +92,6 @@ class CreateUpdatePolicy(Record):
     @property
     def json_body(self) -> Optional[dict]:
         """Request Body"""
-        cap = ','.join((f'"{x}"' for x in self.body.capabilities))
-        d = {'policy': f'path "{self.body.path}" {{capabilities = [{cap}]}}'}
-        return d
-        # return self.dict(include={'body'})
+        cap = (f'["{",".join(x)}"]' for x in self.body.capabilities)
+        pc = zip(self.body.path, cap)
+        return {'policy': ' '.join([f'path "{p}" {{capabilities = {c}}}' for p, c in pc])}

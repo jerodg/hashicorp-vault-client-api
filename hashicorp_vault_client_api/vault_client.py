@@ -23,8 +23,9 @@ from typing import List, NoReturn, Optional, Union
 from base_client_api.base_client import BaseClientApi
 from base_client_api.models.record import Record
 from base_client_api.models.results import Results
-from hashicorp_vault_client_api.models.auth import AuthAppRole
 from rich import print
+
+from hashicorp_vault_client_api.models.auth import AuthAppRole
 
 
 class VaultClient(BaseClientApi):

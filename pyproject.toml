@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hashicorp-vault-client-api"
-version = "0.2.1"
+version = "0.3.0"
 description = "HashiCorp Vault Client API"
 authors = ["Jerod Gawne <jerodgawne@gmail.com>"]
 

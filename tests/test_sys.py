@@ -24,6 +24,7 @@ import pytest
 from base_client_api.models.results import Results
 from base_client_api.utils import bprint, tprint
 from devtools import debug
+from rich import print
 
 from hashicorp_vault_client_api.models.sys import CreateUpdateNamespace, CreateUpdatePolicy, Policy
 from hashicorp_vault_client_api.vault_client import VaultClient
@@ -64,15 +65,20 @@ async def test_create_update_policy():
     bprint('Test: Create/Update Policy', 'top')
 
     async with VaultClient(cfg=f'{getenv("CFG_HOME")}/hashicorp_vault_test.toml') as vc:
+        # model = CreateUpdatePolicy(policy_id='je1234.list',
+        #                            body=Policy(path='kv/metadata/',
+        #                                        capabilities=['list']))
         model = CreateUpdatePolicy(policy_id='je1234.list',
-                                   body=Policy(path='kv/metadata/',
-                                               capabilities=['list']))
-
+                                   body=Policy(path=['kv/metadata/', 'kv/metadata/*', 'kv/data/*'],
+                                               capabilities=[['list'], ['list'], ['list']]))
         debug(model)
         debug(model.endpoint)
         debug(model.parameters)
         debug(model.json_body)
         debug(model.dict())
+
+        # print(*model.json_body, sep='\n')
+        print(*model.json_body)
 
         results = await vc.make_request(models=model)
 
