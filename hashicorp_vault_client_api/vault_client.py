@@ -31,7 +31,7 @@ from hashicorp_vault_client_api.models.auth import AuthAppRole
 class VaultClient(BaseClientApi):
     """HashiCorp Vault Client"""
 
-    def __init__(self, cfg: Union[str, dict]):
+    def __init__(self, cfg: Optional[Union[str, dict, List[Union[str, dict]]]] = None):
         """Initializes Class
 
         Args:
