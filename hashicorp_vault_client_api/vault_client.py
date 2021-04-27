@@ -18,6 +18,7 @@ copies or substantial portions of the Software.
 You should have received a copy of the SSPL along with this program.
 If not, see <https://www.mongodb.com/licensing/server-side-public-license>."""
 import asyncio
+from os import getenv
 from typing import List, NoReturn, Optional, Union
 
 from base_client_api.base_client import BaseClientApi
@@ -39,6 +40,7 @@ class VaultClient(BaseClientApi):
                 pointing to a configuration file (json/toml). See
                 config.* in the examples folder for reference."""
         super().__init__(cfg=cfg)
+        self.load_custom_config()
         self.authorized: bool = False
 
     async def __aenter__(self):
@@ -47,10 +49,16 @@ class VaultClient(BaseClientApi):
     async def __aexit__(self, exc_type: None, exc_val: None, exc_tb: None) -> NoReturn:
         await super().__aexit__(exc_type, exc_val, exc_tb)
 
-    async def login(self):
+    async def login(self) -> NoReturn:
+        """Login
+
+        Returns:
+            (NoReturn)"""
         results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth']))))
         response = await self.process_results(results=Results(responses=results), model=AuthAppRole)
         self.HDR['X-Vault-Token'] = response.success[0]['auth']['client_token']
+
+        return
 
     async def make_request(self, models: List[Record], debug: Optional[bool] = False) -> Results:
         """Make Request
@@ -72,6 +80,21 @@ class VaultClient(BaseClientApi):
 
         results = await asyncio.gather(*[asyncio.create_task(self.request(m, debug=debug)) for m in models])
         return await self.process_results(results=Results(responses=results), model=models[0].__class__)
+
+    def load_custom_config(self) -> NoReturn:
+        """Load Custom Configuration Data
+
+        Args:
+
+        Returns:
+            (NoReturn)"""
+        self.cfg['Auth']['role_id'] = getenv('VLT_ROLE')
+        self.cfg['Auth']['secret_id'] = getenv('VLT_SECRET')
+
+        if e := getenv('VLT_BASE'):
+            self.cfg['URI']['Base'] = e
+
+        return
 
 
 if __name__ == '__main__':

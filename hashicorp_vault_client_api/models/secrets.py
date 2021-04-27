@@ -34,7 +34,6 @@ class SecretData(Record):
     key: str
     value: str
     path: Optional[str] = ''
-    cmdb: Optional[str]
 
     def dict(self, *,
              include: set = None,
