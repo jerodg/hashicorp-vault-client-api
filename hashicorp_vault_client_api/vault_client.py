@@ -32,14 +32,14 @@ from hashicorp_vault_client_api.models.auth import AuthAppRole
 class VaultClient(BaseClientApi):
     """HashiCorp Vault Client"""
 
-    def __init__(self, cfg: Optional[Union[str, dict, List[Union[str, dict]]]] = None):
+    def __init__(self, cfg: Optional[Union[str, dict, List[Union[str, dict]]]] = None, env_prefix: Optional[str] = 'VLT_'):
         """Initializes Class
 
         Args:
             cfg (Union[str, dict]): As a str it should contain a full path
                 pointing to a configuration file (json/toml). See
                 config.* in the examples folder for reference."""
-        super().__init__(cfg=cfg)
+        super().__init__(cfg=cfg, env_prefix=env_prefix)
         self.load_custom_config()
         self.authorized: bool = False
 
@@ -88,11 +88,8 @@ class VaultClient(BaseClientApi):
 
         Returns:
             (NoReturn)"""
-        self.cfg['Auth']['role_id'] = getenv('VLT_ROLE')
-        self.cfg['Auth']['secret_id'] = getenv('VLT_SECRET')
-
-        if e := getenv('VLT_BASE'):
-            self.cfg['URI']['Base'] = e
+        self.cfg['Auth']['role_id'] = getenv(f'{self.env_prefix}Username')
+        self.cfg['Auth']['secret_id'] = getenv(f'{self.env_prefix}Password')
 
         return
 
