@@ -25,7 +25,7 @@ from base_client_api.models.results import Results
 from base_client_api.utils import bprint, tprint
 from devtools import debug
 
-from hashicorp_vault_client_api.models.secrets import CreateUpdateSecret, SecretData, SecretOptions
+from hashicorp_vault_client_api.models.secrets import CreateUpdateSecret, SecretData
 from hashicorp_vault_client_api.vault_client import VaultClient
 
 
@@ -41,18 +41,22 @@ async def test_secrets_create_update():
         model = CreateUpdateSecret(
                 data=SecretData(secret_name='client-temp',
                                 key='je1234-eclient',
-                                value='1260094080553877',
+                                value='1260094080553879',
                                 path='je1234/unbound/sandbox'  # {cmdb}/unbound/{partition}
-                                ),
-                options=SecretOptions())
+                                ))
 
         debug(model)
         debug(model.endpoint)
         debug(model.parameters)
-        debug(model.json())
+        debug(model.json_body)
         debug(model.dict())
 
+        debug(vc.cfg)
+        debug(vc.header)
         results = await vc.make_request(models=model)
+        debug(results)
+        debug(vc.cfg)
+        debug(vc.header)
 
         assert type(results) is Results
         assert results.success is not None

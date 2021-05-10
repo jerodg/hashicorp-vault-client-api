@@ -24,7 +24,6 @@ import pytest
 from base_client_api.utils import bprint
 from rich import print
 
-from hashicorp_vault_client_api.models.auth import AuthAppRole
 from hashicorp_vault_client_api.vault_client import VaultClient
 
 
@@ -37,8 +36,8 @@ async def test_auth_approle():
     bprint('Test: Auth Approle', 'top')
 
     async with VaultClient(cfg=f'{getenv("CFG_HOME")}/hashicorp_vault_test.toml') as vc:
-        await vc.login(model=AuthAppRole)
+        await vc.login()
 
-        print(f'Headers:\n{vc.HDR}')
+        print(f'Headers:\n{vc.header}')
 
     bprint(f'Completed in {(time.perf_counter() - ts):f} seconds.', 'bottom')

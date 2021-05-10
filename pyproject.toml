@@ -1,14 +1,36 @@
 [tool.poetry]
 name = "hashicorp-vault-client-api"
-version = "0.3.2"
+version = "0.3.3"
 description = "HashiCorp Vault Client API"
 authors = ["Jerod Gawne <jerodgawne@gmail.com>"]
 
 [tool.poetry.dependencies]
-#base-client-api = "^2.2.2"
-python = "^3.8.0"  # Recommended 3.9+
+python = "^3.9.0"  # Recommended 3.9+
+
+#base-client-api = "^2.3.1"
 
 [tool.poetry.dev-dependencies]
+devtools = "^0.6.1"
+Pygments = "^2.9.0"
+pyinstaller = "^4.3"
+pytest = "^6.2.4"
+pytest-asyncio = "^0.15.1"
+pytest-cov = "^2.11.1"
+pytest-runner = "^5.3.0"
+# base-client-api
+aiodns = "^2.0.0"
+aiofiles = "^0.6.0"
+aiohttp = "^3.7.4"
+aiohttp-pydantic = "^1.9.0"
+brotlipy = "^0.7.0"
+cchardet = "^2.1.7"
+loguru = "^0.5.3"
+pydantic = "^1.8.1"
+python-rapidjson = "^1.0"
+rich = "^10.1.0"
+tenacity = "^7.0.0"
+toml = "^0.10.2"
+uvloop = "^0.15.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.9
 """HashiCorp Vault Client API -> Models -> Init
 Copyright (C) 2021 Jerod Gawne <https://github.com/jerodg/>
 

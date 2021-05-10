@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.9
 """HashiCorp Vault Client API -> Models -> Auth
 Copyright (C) 2021 Jerod Gawne <https://github.com/jerodg/>
 
@@ -63,5 +63,4 @@ class AuthAppRole(Record):
     @property
     def json_body(self) -> Optional[dict]:
         """Request Body"""
-
         return self.dict(include={'role_id', 'secret_id'})

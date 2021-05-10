@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.9
 """HashiCorp Vault Client API -> Vault Client
 Copyright (C) 2021 Jerod Gawne <https://github.com/jerodg/>
 
@@ -24,6 +24,7 @@ from typing import List, NoReturn, Optional, Union
 from base_client_api.base_client import BaseClientApi
 from base_client_api.models.record import Record
 from base_client_api.models.results import Results
+from devtools import debug
 from rich import print
 
 from hashicorp_vault_client_api.models.auth import AuthAppRole
@@ -32,7 +33,7 @@ from hashicorp_vault_client_api.models.auth import AuthAppRole
 class VaultClient(BaseClientApi):
     """HashiCorp Vault Client"""
 
-    def __init__(self, cfg: Optional[Union[str, dict, List[Union[str, dict]]]] = None, env_prefix: Optional[str] = 'VLT_'):
+    def __init__(self, cfg: Optional[Union[str, dict]] = None, env_prefix: Optional[str] = 'VLT_'):
         """Initializes Class
 
         Args:
@@ -54,13 +55,16 @@ class VaultClient(BaseClientApi):
 
         Returns:
             (NoReturn)"""
-        results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth']))))
+        # debug(self.cfg['Auth'])
+        results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth'], namespace='root'))))
         response = await self.process_results(results=Results(responses=results), model=AuthAppRole)
-        self.HDR['X-Vault-Token'] = response.success[0]['auth']['client_token']
-
+        # debug(response)
+        self.header['X-Vault-Token'] = response.success[0]['auth']['client_token']
+        self.authorized = True
+        # debug(self.header)
         return
 
-    async def make_request(self, models: List[Record], debug: Optional[bool] = False) -> Results:
+    async def make_request(self, models: List[Record]) -> Results:
         """Make Request
 
         This is a convenience method to make calling easier.
@@ -68,7 +72,6 @@ class VaultClient(BaseClientApi):
 
         Args:
             models (List[Record]): If sending a list of models they must be all of the same type
-            debug (bool):
 
         Returns:
             results (Reults)"""
@@ -77,8 +80,14 @@ class VaultClient(BaseClientApi):
 
         if type(models) is not list:
             models = [models]
+        debug(models)
+        print('before_results:')
 
-        results = await asyncio.gather(*[asyncio.create_task(self.request(m, debug=debug)) for m in models])
+        tasks = [asyncio.create_task(self.request(m)) for m in models]
+        debug(tasks)
+        results = await asyncio.gather(*tasks)
+
+        debug(results)
         return await self.process_results(results=Results(responses=results), model=models[0].__class__)
 
     def load_custom_config(self) -> NoReturn:
@@ -88,8 +97,15 @@ class VaultClient(BaseClientApi):
 
         Returns:
             (NoReturn)"""
-        self.cfg['Auth']['role_id'] = getenv(f'{self.env_prefix}Username')
-        self.cfg['Auth']['secret_id'] = getenv(f'{self.env_prefix}Password')
+
+        if usr := getenv(f'{self.env_prefix}Auth_Role_Id'):
+            self.cfg['Auth']['role_id'] = usr
+            # debug(usr)
+
+        if pswd := getenv(f'{self.env_prefix}Auth_Secret_Id'):
+            self.cfg['Auth']['secret_id'] = pswd
+            # debug(pswd)
+        # debug(self.cfg)
 
         return
 
