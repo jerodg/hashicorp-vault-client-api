@@ -24,7 +24,6 @@ from typing import List, NoReturn, Optional, Union
 from base_client_api.base_client import BaseClientApi
 from base_client_api.models.record import Record
 from base_client_api.models.results import Results
-from devtools import debug
 from rich import print
 
 from hashicorp_vault_client_api.models.auth import AuthAppRole
@@ -33,14 +32,15 @@ from hashicorp_vault_client_api.models.auth import AuthAppRole
 class VaultClient(BaseClientApi):
     """HashiCorp Vault Client"""
 
-    def __init__(self, cfg: Optional[Union[str, dict]] = None, env_prefix: Optional[str] = 'VLT_'):
+    def __init__(self, cfg: Optional[Union[str, dict]] = None, platform_prefix: Optional[str] = 'VLT_',
+                 instance_prefix: Optional[str] = None):
         """Initializes Class
 
         Args:
             cfg (Union[str, dict]): As a str it should contain a full path
                 pointing to a configuration file (json/toml). See
                 config.* in the examples folder for reference."""
-        super().__init__(cfg=cfg, env_prefix=env_prefix)
+        super().__init__(cfg=cfg, platform_prefix=platform_prefix, instance_prefix=instance_prefix)
         self.load_custom_config()
         self.authorized: bool = False
 
@@ -55,13 +55,13 @@ class VaultClient(BaseClientApi):
 
         Returns:
             (NoReturn)"""
-        # debug(self.cfg['Auth'])
-        results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth'], namespace='root'))))
+        # debug(self.cfg)
+        results = await asyncio.gather(asyncio.create_task(self.request(AuthAppRole(**self.cfg['Auth']))))
         response = await self.process_results(results=Results(responses=results), model=AuthAppRole)
         # debug(response)
         self.header['X-Vault-Token'] = response.success[0]['auth']['client_token']
         self.authorized = True
-        # debug(self.header)
+
         return
 
     async def make_request(self, models: List[Record]) -> Results:
@@ -80,14 +80,11 @@ class VaultClient(BaseClientApi):
 
         if type(models) is not list:
             models = [models]
-        debug(models)
-        print('before_results:')
 
         tasks = [asyncio.create_task(self.request(m)) for m in models]
-        debug(tasks)
+
         results = await asyncio.gather(*tasks)
 
-        debug(results)
         return await self.process_results(results=Results(responses=results), model=models[0].__class__)
 
     def load_custom_config(self) -> NoReturn:
@@ -98,14 +95,13 @@ class VaultClient(BaseClientApi):
         Returns:
             (NoReturn)"""
 
-        if usr := getenv(f'{self.env_prefix}Auth_Role_Id'):
-            self.cfg['Auth']['role_id'] = usr
-            # debug(usr)
+        if role_id := getenv(f'{self.platform_prefix}{self.instance_prefix}Auth_Role_Id'):
+            self.cfg['Auth']['role_id'] = role_id
+            # debug(role_id)
 
-        if pswd := getenv(f'{self.env_prefix}Auth_Secret_Id'):
-            self.cfg['Auth']['secret_id'] = pswd
-            # debug(pswd)
-        # debug(self.cfg)
+        if secret_id := getenv(f'{self.platform_prefix}{self.instance_prefix}Auth_Secret_Id'):
+            self.cfg['Auth']['secret_id'] = secret_id
+            # debug(secret_id)
 
         return
 

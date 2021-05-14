@@ -41,7 +41,7 @@ async def test_secrets_create_update():
         model = CreateUpdateSecret(
                 data=SecretData(secret_name='client-temp',
                                 key='je1234-eclient',
-                                value='1260094080553879',
+                                value='1260094080553880',
                                 path='je1234/unbound/sandbox'  # {cmdb}/unbound/{partition}
                                 ))
 
